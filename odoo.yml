@@ -1,0 +1,40 @@
+version: "3.3"
+
+services:
+  odoo13:
+    image: odoo:13.0
+    container_name: odoo13
+    command: -- --dev=reload
+    restart: always
+    depends_on:
+      - postgres_db
+    ports:
+      - "8069:8069"
+      - "8072:8072"
+    volumes:
+      - odoo-web-data:/var/lib/odoo
+      - ./addons:/mnt/extra-addons:rw
+    environment: 
+      - HOST=postgres_db
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+      
+  postgres_db:
+    image: postgres:10.6
+    container_name: postgres_db
+    restart: always
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_USER=odoo
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - odoo-db-data:/var/lib/postgresql/data/pgdata
+
+volumes:
+  odoo-web-data:
+  odoo-db-data:
