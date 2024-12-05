@@ -1,0 +1,31 @@
+[api]
+  dashboard = true
+
+[log]
+  level = "DEBUG"
+  
+[entryPoints]
+  [entryPoints.web]
+    address = ":80"
+    [entryPoints.web.http]
+      [entryPoints.web.http.redirections]
+        [entryPoints.web.http.redirections.entryPoint]
+          to = "websecure"
+          scheme = "https"
+          permanent = true
+
+  [entryPoints.websecure]
+    address = ":443"
+
+[providers]
+  [providers.docker]
+    watch = true
+    exposedByDefault = false
+    network = "traefik"
+
+[certificatesResolvers.myresolver.acme]
+  email = "mpoderrick97@gmail.com"
+  storage = "acme.json"
+  [certificatesResolvers.myresolver.acme.httpChallenge]
+    # used during the challenge
+    entryPoint = "web"

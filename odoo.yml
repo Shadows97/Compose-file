@@ -16,6 +16,15 @@ services:
       - ./addons:/mnt/extra-addons:rw
     environment: 
       - HOST=postgres_db
+    networks:
+      - traefik
+    labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.prometheus.rule=Host(`crm.interimubackend.nl`)"
+        - traefik.http.services.prometheus.loadbalancer.server.port=9090
+        - "traefik.http.routers.prometheus.entrypoints=websecure"
+        - "traefik.http.routers.prometheus.tls=true"
+        - "traefik.http.routers.prometheus.tls.certresolver=myresolver"
 
   adminer:
     image: adminer
