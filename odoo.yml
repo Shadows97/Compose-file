@@ -2,8 +2,8 @@ version: "3.3"
 
 services:
   odoo13:
-    image: odoo:13.0
-    container_name: odoo13
+    image: odoo:17.0
+    container_name: odoo17
     command: -- --dev=reload
     restart: always
     depends_on:
@@ -20,22 +20,26 @@ services:
       - traefik
     labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.prometheus.rule=Host(`crm.interimubackend.nl`)"
-        - traefik.http.services.prometheus.loadbalancer.server.port=9090
-        - "traefik.http.routers.prometheus.entrypoints=websecure"
-        - "traefik.http.routers.prometheus.tls=true"
-        - "traefik.http.routers.prometheus.tls.certresolver=myresolver"
+        - "traefik.http.routers.odoo.rule=Host(`crm.interimubackend.nl`)"
+        - traefik.http.services.odoo.loadbalancer.server.port=8069
+        - "traefik.http.routers.odoo.entrypoints=websecure"
+        - "traefik.http.routers.odoo.tls=true"
+        - "traefik.http.routers.odoo.tls.certresolver=myresolver"
 
   adminer:
     image: adminer
     restart: always
+    networks:
+      - traefik
     ports:
       - 8080:8080
       
   postgres_db:
-    image: postgres:10.6
+    image: postgres:12.0
     container_name: postgres_db
     restart: always
+    networks:
+      - traefik
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_PASSWORD=odoo
@@ -47,3 +51,7 @@ services:
 volumes:
   odoo-web-data:
   odoo-db-data:
+
+networks:
+  traefik:
+    external: true
